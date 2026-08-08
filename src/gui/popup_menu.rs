@@ -29,6 +29,7 @@ where
     on_selected: Box<dyn Fn(T) -> Message + 'a>,
     options: Cow<'a, [T]>,
     width: Length,
+    menu_width: f32,
     padding: Padding,
     text_size: Option<f32>,
     font: Option<Renderer::Font>,
@@ -56,6 +57,7 @@ where
             on_selected: Box::new(on_selected),
             options: options.into(),
             width: Length::Shrink,
+            menu_width: 150.0,
             text_size: None,
             padding: Self::DEFAULT_PADDING,
             font: None,
@@ -70,6 +72,12 @@ where
     /// Sets the width of the [`PopupMenu`].
     pub fn width(mut self, width: impl Into<Length>) -> Self {
         self.width = width.into();
+        self
+    }
+
+    /// Sets the width of the drop-down menu.
+    pub fn menu_width(mut self, width: f32) -> Self {
+        self.menu_width = width;
         self
     }
 
@@ -316,7 +324,7 @@ where
                 None,
                 &self.menu_style,
             )
-            .width(150.0)
+            .width(self.menu_width)
             .padding(self.padding)
             .font(self.font.unwrap_or_else(|| renderer.default_font()))
             .text_shaping(text::Shaping::Advanced);
