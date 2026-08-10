@@ -29,11 +29,13 @@ where
     on_selected: Box<dyn Fn(T) -> Message + 'a>,
     options: Cow<'a, [T]>,
     width: Length,
+    menu_width: f32,
     padding: Padding,
     text_size: Option<f32>,
     font: Option<Renderer::Font>,
     style: <Theme as Catalog>::Class<'a>,
     menu_style: <Theme as menu::Catalog>::Class<'a>,
+    button_like: bool,
     last_status: Option<Status>,
 }
 
@@ -54,11 +56,13 @@ where
             on_selected: Box::new(on_selected),
             options: options.into(),
             width: Length::Shrink,
+            menu_width: 150.0,
             text_size: None,
             padding: Self::DEFAULT_PADDING,
             font: None,
             style: <Theme as Catalog>::default(),
             menu_style: <Theme as menu::Catalog>::default(),
+            button_like: false,
             last_status: None,
         }
     }
@@ -66,6 +70,12 @@ where
     /// Sets the width of the [`PopupMenu`].
     pub fn width(mut self, width: impl Into<Length>) -> Self {
         self.width = width.into();
+        self
+    }
+
+    /// Sets the width of the drop-down menu.
+    pub fn menu_width(mut self, width: f32) -> Self {
+        self.menu_width = width;
         self
     }
 
@@ -78,6 +88,12 @@ where
     /// Sets the style of the [`Menu`].
     pub fn menu_class(mut self, style: impl Into<<Theme as menu::Catalog>::Class<'a>>) -> Self {
         self.menu_style = style.into();
+        self
+    }
+
+    /// Draws the menu trigger like a standard primary button.
+    pub fn button_like(mut self) -> Self {
+        self.button_like = true;
         self
     }
 }
@@ -126,7 +142,9 @@ where
                 .expand(self.padding)
         };
 
-        layout::Node::new(Size::new(size.width, 24.0))
+        let height = if self.button_like { 30.0 } else { 24.0 };
+
+        layout::Node::new(Size::new(size.width, height))
     }
 
     fn update(
@@ -225,7 +243,7 @@ where
 
         let style = <Theme as Catalog>::style(theme, &self.style, status);
 
-        if is_mouse_over {
+        if self.button_like || is_mouse_over {
             renderer.fill_quad(
                 renderer::Quad {
                     bounds,
@@ -235,9 +253,12 @@ where
                         radius: style.border.radius,
                     },
                     shadow: Shadow {
-                        color: iced::Color::BLACK,
-                        offset: Vector::ZERO,
-                        blur_radius: 0.0,
+                        offset: if self.button_like {
+                            Vector::new(1.0, if is_mouse_over { 2.0 } else { 1.0 })
+                        } else {
+                            Vector::ZERO
+                        },
+                        ..Shadow::default()
                     },
                     snap: true,
                 },
@@ -245,12 +266,11 @@ where
             );
         }
 
-        let icon_size = 0.5;
         renderer.fill_text(
             advanced::Text {
                 content: crate::gui::icon::Icon::MoreVert.as_char().to_string(),
                 font: crate::gui::font::ICONS,
-                size: (bounds.height * icon_size * 1.5).into(),
+                size: 20.0.into(),
                 bounds: Size {
                     width: bounds.width,
                     height: bounds.height,
@@ -292,7 +312,7 @@ where
                 None,
                 &self.menu_style,
             )
-            .width(150.0)
+            .width(self.menu_width)
             .padding(self.padding)
             .font(self.font.unwrap_or_else(|| renderer.default_font()))
             .text_shaping(text::Shaping::Advanced);
@@ -341,7 +361,7 @@ impl<T> State<T> {
     pub fn new() -> Self {
         Self {
             menu: menu::State::default(),
-            is_open: bool::default(),
+            is_open: false,
             hovered_option: Option::default(),
             last_selection: Option::default(),
         }
