@@ -463,7 +463,6 @@ pub fn custom_games<'a>(
                                                         .width(70)
                                                         .menu_width(200.0)
                                                         .class(style::PickList::Button)
-                                                        .open_on_hover()
                                                         .button_like(),
                                                     )
                                                     .push(button::choose_folder(
