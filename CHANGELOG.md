@@ -3,11 +3,14 @@
 * Added:
   * The Mac download now includes `Ludusavi.app` for standard application launching,
     alongside a `ludusavi` command-line link.
+    ([Contributed by marcodallagatta](https://github.com/mtkennerly/ludusavi/pull/642))
   * Ludusavi can now translate native Windows paths into Wine prefixes and vice versa.
     During a scan, these will appear like any other redirected path.
     This is supported for Wine specifically, not any other native Linux paths.
     Currently, this only translates file paths, not the registry.
     ([Contributed by thedavidweng](https://github.com/mtkennerly/ludusavi/pull/614))
+  * GUI: Next to a custom game save path, there is a button to quickly insert manifest placeholders.
+    ([Contributed by a1156883061](https://github.com/mtkennerly/ludusavi/pull/641))
 * Fixed:
   * Two distinct drives whose escaped folder names collided (such as the UNC
     shares `\\a_b\c` and `\\a\b_c`) would share one backup folder, so saves from

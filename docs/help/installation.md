@@ -12,8 +12,10 @@ You can install Ludusavi one of these ways:
   [releases page](https://github.com/mtkennerly/ludusavi/releases).
   It's portable, so you can simply download it and put it anywhere on your system.
   On Mac, extract the archive and open `Ludusavi.app` like any other application.
+  <!--
   The included `ludusavi` link can still be used from the terminal.
   **If you're unsure, choose this option.**
+  -->
 
 * On Windows, you can use [Winget](https://github.com/microsoft/winget-cli).
 
