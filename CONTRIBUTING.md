@@ -42,6 +42,16 @@ These are optional:
 The master icon is `assets/icon.kra`, which you can edit using
 [Krita](https://krita.org/en) and then export into the other formats.
 
+To regenerate the Mac icon, first install `rsvg-convert` (from librsvg) and Pillow,
+then run:
+```bash
+python3 -m pip install pillow
+python3 scripts/generate-macos-icon.py assets/icon.svg assets/icon.icns
+```
+
+This renders the SVG at 1024 pixels, adds the padding used by the Mac Dock,
+and writes all ICNS resolutions.
+
 ### Release preparation
 Commands assume you are using [Git Bash](https://git-scm.com) on Windows.
 
