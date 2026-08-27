@@ -11,6 +11,8 @@
     ([Contributed by thedavidweng](https://github.com/mtkennerly/ludusavi/pull/614))
   * GUI: Next to a custom game save path, there is a button to quickly insert manifest placeholders.
     ([Contributed by a1156883061](https://github.com/mtkennerly/ludusavi/pull/641))
+  * CLI: In `--api` mode, the `backup` command now outputs a `tags` field based on manifest tags.
+    ([Contributed by ChrisJr404](https://github.com/mtkennerly/ludusavi/pull/645))
 * Fixed:
   * Two distinct drives whose escaped folder names collided (such as the UNC
     shares `\\a_b\c` and `\\a\b_c`) would share one backup folder, so saves from
