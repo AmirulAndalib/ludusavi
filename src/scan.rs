@@ -12,7 +12,7 @@ pub mod steam;
 pub mod title;
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{BTreeSet, HashMap, HashSet},
     sync::LazyLock,
 };
 
@@ -37,7 +37,7 @@ use crate::{
         config::{
             BackupFilter, Config, RedirectConfig, RedirectKind, Root, SortKey, ToggledPaths, ToggledRegistry, root,
         },
-        manifest::{Game, GameFileEntry, IdSet, Os, Store},
+        manifest::{Game, GameFileEntry, IdSet, Os, Store, Tag},
     },
     scan::layout::{BackupSemantics, DirectorySemantics, LatestBackup, SemanticDirKind},
 };
@@ -542,7 +542,7 @@ pub fn scan_game_for_backup(
 ) -> ScanInfo {
     log::trace!("[{name}] beginning scan for backup");
 
-    let mut found_files = HashMap::new();
+    let mut found_files: HashMap<StrictPath, ScannedFile> = HashMap::new();
     #[cfg_attr(not(target_os = "windows"), allow(unused))]
     let mut found_registry_keys = HashMap::new();
     #[allow(unused)]
@@ -550,6 +550,10 @@ pub fn scan_game_for_backup(
     let has_backups = previous.is_some();
 
     let mut paths_to_check = HashSet::<(StrictPath, Option<bool>)>::new();
+    // Manifest tags for each candidate path, so found files can report whether
+    // they are saves, configs, and so on. Paths that overlap accumulate all of
+    // their tags.
+    let mut path_tags = HashMap::<StrictPath, BTreeSet<Tag>>::new();
 
     // Add a dummy root for checking paths without `<root>`.
     let mut roots_to_check: Vec<Root> = vec![Root::new(SKIP, Store::Other)];
@@ -650,6 +654,12 @@ pub fn scan_game_for_backup(
 
             for (candidate, case_sensitive) in candidates {
                 log::trace!("[{name}] parsed candidate: {candidate:?}");
+                if !path_data.tags.is_empty() {
+                    path_tags
+                        .entry(candidate.clone())
+                        .or_default()
+                        .extend(path_data.tags.iter().cloned());
+                }
                 paths_to_check.insert((candidate, Some(case_sensitive)));
             }
         }
@@ -716,6 +726,7 @@ pub fn scan_game_for_backup(
             log::debug!("[{name}] excluded: {path:?}");
             continue;
         }
+        let tags = path_tags.get(&path).cloned().unwrap_or_default();
         let paths = match case_sensitive {
             None => path.glob(),
             Some(cs) => path.glob_case_sensitive(cs),
@@ -743,9 +754,10 @@ pub fn scan_game_for_backup(
                 );
                 let change =
                     ScanChange::evaluate_backup(&hash, previous_files.get(redirected.as_ref().unwrap_or(&scan_key)));
-                found_files.insert(
-                    scan_key,
-                    ScannedFile {
+                found_files
+                    .entry(scan_key)
+                    .and_modify(|existing| existing.tags.extend(tags.iter().cloned()))
+                    .or_insert_with(|| ScannedFile {
                         change,
                         size,
                         hash,
@@ -753,8 +765,8 @@ pub fn scan_game_for_backup(
                         original_path: None,
                         ignored,
                         container: None,
-                    },
-                );
+                        tags: tags.clone(),
+                    });
             } else if p.is_dir() {
                 log::trace!("[{name}] looking for files in: {p:?}");
                 for child in walkdir::WalkDir::new(p.as_std_path_buf().unwrap())
@@ -794,9 +806,10 @@ pub fn scan_game_for_backup(
                             &hash,
                             previous_files.get(redirected.as_ref().unwrap_or(&scan_key)),
                         );
-                        found_files.insert(
-                            scan_key,
-                            ScannedFile {
+                        found_files
+                            .entry(scan_key)
+                            .and_modify(|existing| existing.tags.extend(tags.iter().cloned()))
+                            .or_insert_with(|| ScannedFile {
                                 change,
                                 size,
                                 hash,
@@ -804,8 +817,8 @@ pub fn scan_game_for_backup(
                                 original_path: None,
                                 ignored,
                                 container: None,
-                            },
-                        );
+                                tags: tags.clone(),
+                            });
                     }
                 }
             }
@@ -840,6 +853,7 @@ pub fn scan_game_for_backup(
                     original_path: None,
                     ignored: ignored_paths.is_ignored(name, previous_file),
                     container: None,
+                    tags: Default::default(),
                 },
             );
         }
@@ -1349,6 +1363,51 @@ mod tests {
     }
 
     #[test]
+    fn can_scan_game_for_backup_with_tags() {
+        let manifest = Manifest::load_from_string(
+            r#"
+            game1:
+              files:
+                <base>/file1.txt:
+                  tags:
+                    - config
+                <base>/subdir:
+                  tags:
+                    - save
+            "#,
+        )
+        .unwrap();
+
+        assert_eq!(
+            ScanInfo {
+                game_name: s("game1"),
+                found_files: hash_map! {
+                    format!("{}/tests/root1/game1/subdir/file2.txt", repo()).into(): ScannedFile::with_tags(2, "9d891e731f75deae56884d79e9816736b7488080", BTreeSet::from([Tag::Save])).change_new(),
+                    format!("{}/tests/root2/game1/file1.txt", repo()).into(): ScannedFile::with_tags(1, "3a52ce780950d4d969792a2559cd519d7ee8c727", BTreeSet::from([Tag::Config])).change_new(),
+                },
+                found_registry_keys: hash_map! {},
+                ..Default::default()
+            },
+            scan_game_for_backup(
+                &manifest.0["game1"],
+                "game1",
+                &config().roots,
+                &StrictPath::new(repo()),
+                &Launchers::scan_dirs(&config().roots, &manifest, &["game1".to_string()]),
+                &BackupFilter::default(),
+                None,
+                &ToggledPaths::default(),
+                &ToggledRegistry::default(),
+                None,
+                &[],
+                false,
+                &Default::default(),
+                ONLY_CONSTRUCTIVE,
+            ),
+        );
+    }
+
+    #[test]
     fn can_scan_game_for_backup_deduplicating_symlinks() {
         let roots = &[Root::new(format!("{}/tests/root3", repo()), Store::Other)];
         assert_eq!(
@@ -1394,6 +1453,7 @@ mod tests {
                         change: ScanChange::New,
                         container: None,
                         redirected: Some(StrictPath::new(format!("{}/tests/root3/game5/data-symlink/file1.txt", repo()))),
+                        tags: Default::default(),
                     },
                 },
                 found_registry_keys: hash_map! {},
@@ -1762,6 +1822,7 @@ mod tests {
                         change: ScanChange::Unknown,
                         container: None,
                         redirected: Some(current_path.clone()),
+                        tags: Default::default(),
                     },
                 },
                 ..Default::default()
@@ -1809,6 +1870,7 @@ mod tests {
                         change: ScanChange::Unknown,
                         container: None,
                         redirected: None,
+                        tags: Default::default(),
                     },
                 },
                 ..Default::default()

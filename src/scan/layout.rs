@@ -792,6 +792,7 @@ impl GameLayout {
                             ignored: toggled_paths.is_ignored(&self.mapping.name, ignorable_path),
                             redirected,
                             original_path: Some(original_path),
+                            tags: Default::default(),
                             container: None,
                         },
                     );
@@ -813,6 +814,7 @@ impl GameLayout {
                             ignored: toggled_paths.is_ignored(&self.mapping.name, ignorable_path),
                             redirected,
                             original_path: Some(original_path),
+                            tags: Default::default(),
                             container: Some(self.path.joined(&backup.name)),
                         },
                     );
@@ -867,6 +869,7 @@ impl GameLayout {
                             ignored: toggled_paths.is_ignored(&self.mapping.name, ignorable_path),
                             redirected,
                             original_path: Some(original_path),
+                            tags: Default::default(),
                             container: None,
                         },
                     );
@@ -888,6 +891,7 @@ impl GameLayout {
                             ignored: toggled_paths.is_ignored(&self.mapping.name, ignorable_path),
                             redirected,
                             original_path: Some(original_path),
+                            tags: Default::default(),
                             container: Some(self.path.joined(&backup.name)),
                         },
                     );
@@ -938,6 +942,7 @@ impl GameLayout {
                         ignored: false,
                         container: None,
                         redirected: None,
+                        tags: Default::default(),
                     },
                 );
             }
@@ -3249,6 +3254,7 @@ mod tests {
                         container: None,
                         redirected: None,
 
+                        tags: Default::default(),
                     },
                     make_restorable_path("backup-1", "file2.txt"): ScannedFile {
                         size: 2,
@@ -3259,6 +3265,7 @@ mod tests {
                         container: None,
                         redirected: None,
 
+                        tags: Default::default(),
                     },
                 },
                 layout.restorable_files(
@@ -3301,6 +3308,7 @@ mod tests {
                         container: Some(make_path("backup-1.zip")),
                         redirected: None,
 
+                        tags: Default::default(),
                     },
                     make_restorable_path_zip("file2.txt"): ScannedFile {
                         size: 2,
@@ -3311,6 +3319,7 @@ mod tests {
                         container: Some(make_path("backup-1.zip")),
                         redirected: None,
 
+                        tags: Default::default(),
                     },
                 },
                 layout.restorable_files(
@@ -3364,6 +3373,7 @@ mod tests {
                         container: None,
                         redirected: None,
 
+                        tags: Default::default(),
                     },
                     make_restorable_path("backup-2", "changed.txt"): ScannedFile {
                         size: 2,
@@ -3374,6 +3384,7 @@ mod tests {
                         container: None,
                         redirected: None,
 
+                        tags: Default::default(),
                     },
                     make_restorable_path("backup-2", "added.txt"): ScannedFile {
                         size: 5,
@@ -3384,6 +3395,7 @@ mod tests {
                         container: None,
                         redirected: None,
 
+                        tags: Default::default(),
                     },
                 },
                 layout.restorable_files(
@@ -3507,6 +3519,7 @@ mod tests {
                         container: Some(make_path("backup-1.zip")),
                         redirected: None,
 
+                        tags: Default::default(),
                     },
                     make_restorable_path_zip("changed.txt"): ScannedFile {
                         size: 2,
@@ -3517,6 +3530,7 @@ mod tests {
                         container: Some(make_path("backup-2.zip")),
                         redirected: None,
 
+                        tags: Default::default(),
                     },
                     make_restorable_path_zip("added.txt"): ScannedFile {
                         size: 5,
@@ -3527,6 +3541,7 @@ mod tests {
                         container: Some(make_path("backup-2.zip")),
                         redirected: None,
 
+                        tags: Default::default(),
                     },
                 },
                 layout.restorable_files(
@@ -3614,6 +3629,7 @@ mod tests {
                             container: None,
                             redirected: None,
 
+                        tags: Default::default(),
                     },
                         restorable_file_simple(SOLO, "file2.txt"): ScannedFile {
                             size: 2,
@@ -3624,6 +3640,7 @@ mod tests {
                             container: None,
                             redirected: None,
 
+                        tags: Default::default(),
                     },
                     },
                     found_registry_keys: Default::default(),

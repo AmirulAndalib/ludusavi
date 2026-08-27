@@ -6,7 +6,7 @@ use crate::{
     cloud::CloudChange,
     lang::TRANSLATOR,
     prelude::StrictPath,
-    resource::manifest::Os,
+    resource::manifest::{Os, Tag},
     scan::{
         BackupError, BackupInfo, DuplicateDetector, OperationStatus, OperationStepDecision, ScanChange, ScanInfo,
         TitleMatch, compare_ranked_titles_ref, layout::Backup, registry,
@@ -98,6 +98,10 @@ pub struct ApiFile {
     /// Any other games that also have the same file path.
     #[serde(skip_serializing_if = "BTreeSet::is_empty")]
     pub duplicated_by: BTreeSet<String>,
+    /// Manifest tags describing the kind of data, such as `save` or `config`.
+    /// Only set when backing up, since the tags come from the manifest.
+    #[serde(skip_serializing_if = "BTreeSet::is_empty")]
+    pub tags: BTreeSet<Tag>,
 }
 
 #[derive(Debug, Default, serde::Serialize, schemars::JsonSchema)]
@@ -429,6 +433,7 @@ impl Reporter {
                             .and_then(|x| x.failed_files.get(scan_key).map(SaveError::from)),
                         ignored: entry.ignored,
                         change: entry.change(),
+                        tags: entry.tags.clone(),
                         ..Default::default()
                     };
                     if !duplicate_detector.is_file_duplicated(scan_key, entry).resolved() {
@@ -736,6 +741,7 @@ Overall:
                         change: Default::default(),
                         container: None,
                         redirected: None,
+                        tags: Default::default(),
                     },
                     "/file2".into(): ScannedFile {
                         size: 51_200,
@@ -745,6 +751,7 @@ Overall:
                         change: Default::default(),
                         container: None,
                         redirected: None,
+                        tags: Default::default(),
                     },
                 },
                 found_registry_keys: hash_map! {
@@ -805,6 +812,7 @@ Overall:
                         change: ScanChange::Same,
                         container: None,
                         redirected: None,
+                        tags: Default::default(),
                     },
                 },
                 found_registry_keys: hash_map! {},
@@ -828,6 +836,7 @@ Overall:
                         change: Default::default(),
                         container: None,
                         redirected: None,
+                        tags: Default::default(),
                     },
                 },
                 found_registry_keys: hash_map! {},
@@ -873,6 +882,7 @@ Overall:
                         change: Default::default(),
                         container: None,
                         redirected: None,
+                        tags: Default::default(),
                     },
                     "/backup/file2".into(): ScannedFile {
                         size: 51_200,
@@ -882,6 +892,7 @@ Overall:
                         change: Default::default(),
                         container: None,
                         redirected: None,
+                        tags: Default::default(),
                     },
                 },
                 found_registry_keys: hash_map! {},
@@ -1214,6 +1225,7 @@ Overall:
                         change: Default::default(),
                         container: None,
                         redirected: None,
+                        tags: Default::default(),
                     },
                     "/backup/file2".into(): ScannedFile {
                         size: 50,
@@ -1223,6 +1235,7 @@ Overall:
                         change: Default::default(),
                         container: None,
                         redirected: None,
+                        tags: Default::default(),
                     },
                 },
                 found_registry_keys: hash_map! {},

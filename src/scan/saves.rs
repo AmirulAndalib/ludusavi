@@ -1,7 +1,8 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use crate::{
     prelude::StrictPath,
+    resource::manifest::Tag,
     scan::{ScanChange, ScanKind},
 };
 
@@ -16,6 +17,8 @@ pub struct ScannedFile {
     /// An enclosing archive file, if any, depending on the `BackupFormat`.
     pub container: Option<StrictPath>,
     pub redirected: Option<StrictPath>,
+    /// Manifest tags describing the kind of data (e.g. save or config).
+    pub tags: BTreeSet<Tag>,
 }
 
 impl ScannedFile {
@@ -29,6 +32,7 @@ impl ScannedFile {
             change: Default::default(),
             container: None,
             redirected: None,
+            tags: Default::default(),
         }
     }
 
@@ -42,6 +46,21 @@ impl ScannedFile {
             change,
             container: None,
             redirected: None,
+            tags: Default::default(),
+        }
+    }
+
+    #[cfg(test)]
+    pub fn with_tags<H: ToString>(size: u64, hash: H, tags: BTreeSet<Tag>) -> Self {
+        Self {
+            size,
+            hash: hash.to_string(),
+            original_path: None,
+            ignored: false,
+            change: Default::default(),
+            container: None,
+            redirected: None,
+            tags,
         }
     }
 
