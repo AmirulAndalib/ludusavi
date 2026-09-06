@@ -975,6 +975,7 @@ impl Translator {
         translate(match store {
             Store::Ea => "store-ea",
             Store::Epic => "store-epic",
+            Store::Faugus => "store-faugus",
             Store::Gog => "store-gog",
             Store::GogGalaxy => "store-gog-galaxy",
             Store::Heroic => "store-heroic",

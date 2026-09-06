@@ -349,6 +349,7 @@ impl ToString for Theme {
 pub enum Root {
     Ea(root::Ea),
     Epic(root::Epic),
+    Faugus(root::Faugus),
     Gog(root::Gog),
     GogGalaxy(root::GogGalaxy),
     Heroic(root::Heroic),
@@ -378,6 +379,7 @@ impl Root {
         match store {
             Store::Ea => Self::Ea(root::Ea { path: path.into() }),
             Store::Epic => Self::Epic(root::Epic { path: path.into() }),
+            Store::Faugus => Self::Faugus(root::Faugus { path: path.into() }),
             Store::Gog => Self::Gog(root::Gog { path: path.into() }),
             Store::GogGalaxy => Self::GogGalaxy(root::GogGalaxy { path: path.into() }),
             Store::Heroic => Self::Heroic(root::Heroic { path: path.into() }),
@@ -404,6 +406,7 @@ impl Root {
         match self {
             Self::Ea(_) => Store::Ea,
             Self::Epic(_) => Store::Epic,
+            Self::Faugus(_) => Store::Faugus,
             Self::Gog(_) => Store::Gog,
             Self::GogGalaxy(_) => Store::GogGalaxy,
             Self::Heroic(_) => Store::Heroic,
@@ -427,6 +430,7 @@ impl Root {
         match self {
             Self::Ea(root::Ea { path }) => path,
             Self::Epic(root::Epic { path }) => path,
+            Self::Faugus(root::Faugus { path }) => path,
             Self::Gog(root::Gog { path }) => path,
             Self::GogGalaxy(root::GogGalaxy { path }) => path,
             Self::Heroic(root::Heroic { path }) => path,
@@ -450,6 +454,7 @@ impl Root {
         match self {
             Self::Ea(root::Ea { path }) => path,
             Self::Epic(root::Epic { path }) => path,
+            Self::Faugus(root::Faugus { path }) => path,
             Self::Gog(root::Gog { path }) => path,
             Self::GogGalaxy(root::GogGalaxy { path }) => path,
             Self::Heroic(root::Heroic { path }) => path,
@@ -1487,6 +1492,12 @@ impl Config {
             // EA app:
             (format!("{pf32}/EA Games"), Store::Ea),
             (format!("{pf64}/EA Games"), Store::Ea),
+            // Faugus
+            ("~/.config/faugus-launcher".to_string(), Store::Faugus),
+            (
+                "~/.var/app/io.github.Faugus.faugus-launcher/config/faugus-launcher".to_string(),
+                Store::Faugus,
+            ),
         ];
 
         if let Some(data_dir) = CommonPath::Data.get() {

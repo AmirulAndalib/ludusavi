@@ -124,6 +124,7 @@ impl From<&str> for Os {
 pub enum Store {
     Ea,
     Epic,
+    Faugus,
     Gog,
     GogGalaxy,
     Heroic,

@@ -211,6 +211,23 @@ pub fn parse_paths(
     );
 
     match root.store() {
+        Store::Faugus => {
+            if Os::HOST == Os::Linux && root_globbable.ends_with(root::Faugus::FLATPAK_SUFFIX) {
+                // Faugus is installed via Flatpak.
+                add_path!(
+                    path.replace(
+                        p::XDG_DATA,
+                        check_nonwindows_path(&format!("{}/../../data", root_globbable)),
+                    )
+                    .replace(
+                        p::XDG_CONFIG,
+                        check_nonwindows_path(&format!("{}/../../config", root_globbable)),
+                    )
+                    .replace(p::STORE_USER_ID, "*")
+                    .replace(p::OS_USER_NAME, &crate::prelude::OS_USERNAME)
+                );
+            }
+        }
         Store::Gog => {
             if Os::HOST == Os::Linux {
                 add_path!(

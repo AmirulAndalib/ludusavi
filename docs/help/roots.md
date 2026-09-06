@@ -32,6 +32,10 @@ along with the root's type:
   Ludusavi expects the game YAML files to contain a few fields,
   particularly `name` and either `game.working_dir` or `game.exe`.
   Games will be skipped if they don't have the necessary fields.
+<!--
+* For a Faugus root, this should be the folder containing `games.json`.
+  That's typically `~/.config/faugus-launcher` or `~/.var/app/io.github.Faugus.faugus-launcher/config/faugus-launcher`.
+-->
 * For the "other" root type and the remaining store-specific roots,
   this should be a folder whose direct children are individual games.
   For example, in the Epic Games store, this would be what you choose as the

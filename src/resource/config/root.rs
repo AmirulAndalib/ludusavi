@@ -52,6 +52,36 @@ pub struct Epic {
     schemars::JsonSchema,
 )]
 #[serde(default, rename_all = "camelCase")]
+pub struct Faugus {
+    /// Where the root is located on your system.
+    pub path: StrictPath,
+}
+
+impl Faugus {
+    pub const FLATPAK_SUFFIX: &str = ".var/app/io.github.Faugus.faugus-launcher/config/faugus-launcher";
+
+    pub fn flatpak_home(&self) -> Option<StrictPath> {
+        self.path
+            .raw()
+            .ends_with(Self::FLATPAK_SUFFIX)
+            .then(|| self.path.popped().popped())
+    }
+}
+
+#[derive(
+    Clone,
+    Debug,
+    Default,
+    Eq,
+    PartialEq,
+    Ord,
+    PartialOrd,
+    Hash,
+    serde::Serialize,
+    serde::Deserialize,
+    schemars::JsonSchema,
+)]
+#[serde(default, rename_all = "camelCase")]
 pub struct Gog {
     /// Where the root is located on your system.
     pub path: StrictPath,

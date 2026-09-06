@@ -1,6 +1,8 @@
 ## Unreleased
 
 * Added:
+  * Ludusavi can now detect saves and Wine prefixes for the Faugus game launcher.
+    It will automatically detect the standard Faugus root locations as well.
   * The Mac download now includes `Ludusavi.app` for standard application launching,
     alongside a `ludusavi` command-line link.
     ([Contributed by marcodallagatta](https://github.com/mtkennerly/ludusavi/pull/642))

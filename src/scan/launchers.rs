@@ -1,3 +1,4 @@
+mod faugus;
 mod generic;
 pub mod heroic;
 mod legendary;
@@ -67,6 +68,7 @@ impl Launchers {
 
             log::debug!("Scanning launcher info: {:?}", &root);
             let mut found = match root {
+                Root::Faugus(root) => faugus::scan(root, title_finder),
                 Root::Heroic(root) => heroic::scan(root, title_finder, legendary.as_ref()),
                 Root::Legendary(root) => legendary::scan(root, title_finder),
                 Root::Lutris(root) => lutris::scan(root, title_finder),

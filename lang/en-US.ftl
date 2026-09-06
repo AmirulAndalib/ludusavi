@@ -168,6 +168,7 @@ label-installed-name = Installed name
 
 store-ea = EA
 store-epic = Epic
+store-faugus = Faugus
 store-gog = GOG
 store-gog-galaxy = GOG Galaxy
 store-heroic = Heroic
