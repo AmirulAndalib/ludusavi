@@ -1212,7 +1212,6 @@ mod tests {
             clap::error::ErrorKind::ValueValidation,
         );
     }
-    
 
     #[test]
     fn rejects_cli_backup_with_full_limit_of_zero() {
@@ -1229,7 +1228,7 @@ mod tests {
             clap::error::ErrorKind::ValueValidation,
         );
     }
-    
+
     #[test]
     fn accepts_cli_restore_with_sort_variants() {
         let cases = [

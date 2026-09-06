@@ -21,6 +21,9 @@
     ([Contributed by dkxmercury](https://github.com/mtkennerly/ludusavi/pull/631))
   * Rclone sync did not work when the `RCLONE_PROGRESS` environment variable was set.
     ([Contributed by bm1016bm-svg](https://github.com/mtkennerly/ludusavi/pull/635))
+  * CLI: `--full-limit 0` would result in no backups being created or retained.
+    0 is now rejected before the command runs.
+    ([Contributed by rleeon](https://github.com/mtkennerly/ludusavi/pull/647))
 
 ## v0.31.0 (2026-04-04)
 
