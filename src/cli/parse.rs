@@ -193,7 +193,7 @@ pub enum Subcommand {
         /// Maximum number of full backups to retain per game.
         /// Must be between 1 and 255 (inclusive).
         /// When not specified, this defers to the config file.
-        #[clap(long)]
+        #[clap(long, value_parser = clap::value_parser!(u8).range(1..))]
         full_limit: Option<u8>,
 
         /// Maximum number of differential backups to retain per full backup.
@@ -493,7 +493,7 @@ pub enum Subcommand {
         /// Maximum number of full backups to retain per game.
         /// Must be between 1 and 255 (inclusive).
         /// When not specified, this defers to the config file.
-        #[clap(long)]
+        #[clap(long, value_parser = clap::value_parser!(u8).range(1..))]
         full_limit: Option<u8>,
 
         /// Maximum number of differential backups to retain per full backup.
@@ -1212,7 +1212,24 @@ mod tests {
             clap::error::ErrorKind::ValueValidation,
         );
     }
+    
 
+    #[test]
+    fn rejects_cli_backup_with_full_limit_of_zero() {
+        check_args_err(
+            &["ludusavi", "backup", "--full-limit", "0"],
+            clap::error::ErrorKind::ValueValidation,
+        );
+    }
+
+    #[test]
+    fn rejects_cli_wrap_with_full_limit_of_zero() {
+        check_args_err(
+            &["ludusavi", "wrap", "--name", "game1", "--full-limit", "0"],
+            clap::error::ErrorKind::ValueValidation,
+        );
+    }
+    
     #[test]
     fn accepts_cli_restore_with_sort_variants() {
         let cases = [
