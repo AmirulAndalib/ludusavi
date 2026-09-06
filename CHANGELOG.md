@@ -1,25 +1,28 @@
 ## Unreleased
 
 * Added:
-  * Ludusavi can now detect saves and Wine prefixes for the Faugus game launcher.
-    It will automatically detect the standard Faugus root locations as well.
-  * The Mac download now includes `Ludusavi.app` for standard application launching,
-    alongside a `ludusavi` command-line link.
-    ([Contributed by marcodallagatta](https://github.com/mtkennerly/ludusavi/pull/642))
-  * Ludusavi can now translate native Windows paths into Wine prefixes and vice versa.
+  * _Experimental_:
+    Ludusavi can now translate native Windows file paths into Wine prefixes and vice versa.
     During a scan, these will appear like any other redirected path.
     This is supported for Wine specifically, not any other native Linux paths.
-    Currently, this only translates file paths, not the registry.
     ([Contributed by thedavidweng](https://github.com/mtkennerly/ludusavi/pull/614))
+
+    For more information, see [the help documentation](/docs/help/transfer-between-operating-systems.md).
+    As it is an experimental feature, it requires some manual configuration and has some caveats.
+  * Ludusavi can now detect saves and Wine prefixes for the Faugus game launcher.
+    It will automatically detect the standard Faugus root locations as well.
+  * The Mac download now includes `Ludusavi.app` for more standard packaging,
+    alongside a `ludusavi` symlink pointing to the inner executable.
+    ([Contributed by marcodallagatta](https://github.com/mtkennerly/ludusavi/pull/642))
   * GUI: Next to a custom game save path, there is a button to quickly insert manifest placeholders.
     ([Contributed by a1156883061](https://github.com/mtkennerly/ludusavi/pull/641))
   * CLI: In `--api` mode, the `backup` command now outputs a `tags` field based on manifest tags.
     ([Contributed by ChrisJr404](https://github.com/mtkennerly/ludusavi/pull/645))
 * Fixed:
-  * Two distinct drives whose escaped folder names collided (such as the UNC
-    shares `\\a_b\c` and `\\a\b_c`) would share one backup folder, so saves from
-    one could silently overwrite the other. Colliding folder names are now
-    disambiguated with a numeric suffix.
+  * Two distinct drives whose escaped folder names collided
+    (such as the UNC shares `\\a_b\c` and `\\a\b_c`) would share one backup
+    so saves from one could silently overwrite the other.
+    Colliding folder names are now disambiguated with a numeric suffix.
     ([Contributed by dkxmercury](https://github.com/mtkennerly/ludusavi/pull/631))
   * Rclone sync did not work when the `RCLONE_PROGRESS` environment variable was set.
     ([Contributed by bm1016bm-svg](https://github.com/mtkennerly/ludusavi/pull/635))

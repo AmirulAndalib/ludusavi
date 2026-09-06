@@ -18,3 +18,23 @@ A subset of cross-OS transfer is under consideration for Windows and Wine prefix
 but there is no timeline for this.
 You can follow this ticket for any future updates:
 https://github.com/mtkennerly/ludusavi/issues/194
+
+<!--
+## Windows and Wine
+Ludusavi supports an experimental feature to translate between Windows paths and Wine prefixes.
+This currently only supports files, not registry values.
+
+As this is an experimental feature, you must enable it via the [config file](/docs/help/configuration-file.md),
+by setting `scan.redirectWine: true`.
+
+A game must have a "preferred" Wine prefix.
+For now, that means it must have a custom game entry,
+and the preferred prefix is simply the first one defined by the custom game entry.
+
+There are some exclusions where the automatic Wine redirects will not apply:
+
+* No preferred Wine prefix
+* Wine prefix does not already exist
+* Wine prefix has multiple potential user folders
+* Windows path is on a complex UNC drive instead of a simple drive letter
+-->
